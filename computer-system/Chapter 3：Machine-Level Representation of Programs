@@ -1,0 +1,215 @@
+# Chapter 3：Machine-Level Representation of Programs
+
+摩尔定律：晶体管数量每18个月翻一倍
+
+## 3.2 Program Encodings
+
+### 3.2.1Machine-Level Code
+
+* 程序计数器(Program counter)：指示下个要执行的地址
+* 寄存器文件(register file)：16个，存地址或整数数据。
+* 条件码(condition code)：最近执行的算术或逻辑指令的状态信息
+* 一组向量寄存器：一个或多个整数或浮点数的值
+
+程序内存：可执行机器代码、操作系统需要的信息、管理过程调用和返回的运行时栈，用户分配的内存块。
+
+## 3.3 Data Formats
+
+![image-20220105153447943](Chapter 3：Machine-Level Representation of Programs.assets/image-20220105153447943.png)
+
+## 3.4 Accessing Information
+
+![image-20220105153807978](Chapter 3：Machine-Level Representation of Programs.assets/image-20220105153807978.png)
+
+### 3.4.1 Operand Specifiers(操作数指示符)
+
+![image-20220105154149637](Chapter 3：Machine-Level Representation of Programs.assets/image-20220105154149637.png)
+
+立即数：表示常数值
+
+寄存器：表示某个寄存器的此内容
+
+内存引用：根据计算的地址访问某个内存地址。
+
+### 3.4.2 Data Movement Instructions
+
+移位操作指令，根据后缀确定移动的字节数。
+
+**movl作为以寄存器作为目的时，把该寄存器高位4字节设置为0**
+
+最后一条指令用于处理64位立即数数据。常规的movq只能表示32位补码数字立即数作为源操作数。
+
+![image-20220105155541355](Chapter 3：Machine-Level Representation of Programs.assets/image-20220105155541355.png)
+
+**五种操作组合**
+
+![image-20220105155840966](Chapter 3：Machine-Level Representation of Programs.assets/image-20220105155840966.png)
+
+**示例**
+
+![image-20220105160859124](Chapter 3：Machine-Level Representation of Programs.assets/image-20220105160859124.png)
+
+较小源值复制到较大目的时，有一下两类数据移动指令。
+
+movz：零扩展，把剩余字节填充为0
+
+movs：符号扩展，源操作最高位进行复制。
+
+其中源为**寄存器或内存**，目的为**寄存器**
+
+![image-20220105160536172](Chapter 3：Machine-Level Representation of Programs.assets/image-20220105160536172.png)
+
+![image-20220105160547593](Chapter 3：Machine-Level Representation of Programs.assets/image-20220105160547593.png)
+
+**注意：没有把4字节源零扩展到8字节目的指令，可以用movl实现**
+
+cltq指令，总是以寄存器%eax作为源，%rax作为符号扩展结果的目的。与`movslq %eax, %rax`一致
+
+**示范**
+
+![image-20220105163413294](Chapter 3：Machine-Level Representation of Programs.assets/image-20220105163413294.png)
+
+**练习3.3**
+
+![image-20220105165211051](Chapter 3：Machine-Level Representation of Programs.assets/image-20220105165211051.png)
+
+EBX 是**"基地址"(base)**寄存器, 在内存寻址时存放基地址。
+
+### 3.4.3 Data Movement Example
+
+**练习题3.4**
+
+![image-20220105170654519](Chapter 3：Machine-Level Representation of Programs.assets/image-20220105170654519.png)
+
+![image-20220105170701381](Chapter 3：Machine-Level Representation of Programs.assets/image-20220105170701381.png)
+
+1. 如果从字节小->字节大
+   1. 有符号->无符号，进行符号扩展
+   2. 有符号->无符号，进行零扩展
+2. 如果从字节大->字节小，不用进行扩展，使用源长度后缀复制给rax，再根据目的长度，调整后缀。
+
+**练习题3.5**
+
+![image-20220105171514564](Chapter 3：Machine-Level Representation of Programs.assets/image-20220105171514564.png)
+
+解析：将内存地址的内容（用*表示地址的内容），用寄存器暂存，然后再将寄存器的内容，存入另一个内存地址，作为地址内容。
+
+### 3.4.4 Pushing and Popping Stack Data
+
+1. 后进先出
+2. 对栈顶进行插入和删除
+3. 栈向下增长，栈顶地址是最低的。栈顶在底部
+
+![image-20220105172708196](Chapter 3：Machine-Level Representation of Programs.assets/image-20220105172708196.png)
+
+压栈等价于下述内容
+
+![image-20220105172450869](Chapter 3：Machine-Level Representation of Programs.assets/image-20220105172450869.png)
+
+弹栈等价下述
+
+![image-20220105172625451](Chapter 3：Machine-Level Representation of Programs.assets/image-20220105172625451.png)
+
+## 3.5 Arithmetic and Logical Operations
+
+每个指令都带有不同大小操作数变种(如addb、addw、addl、addq)
+
+分为4组：**加载有效地址、一元操作、二元操作和移位**
+
+![image-20220105173000509](Chapter 3：Machine-Level Representation of Programs.assets/image-20220105173000509.png)
+
+### 3.5.1 Load Effective Address
+
+实际上是movq操作，并诶呦引用内存，而是将有效地址写入目的操作数。
+
+假如：%rdx值为x，则` leaq 7(%rdx,%rdx,4), %rax`将%rax设置为5x+7。目的操作数必须是寄存器。
+
+**案例**
+
+![image-20220105173734800](Chapter 3：Machine-Level Representation of Programs.assets/image-20220105173734800.png)
+
+可以理解为是对寄存器的**地址计算的结果**，然后复制给另一个寄存器。
+
+而传统的移位操作会将计算后的**地址内容**，复制过去。
+
+### 3.5.2 Unary and Binary Operations (一元和二元操作)
+
+ the instruction `subq %rax,%rdx` decrements register %rdx by the value in %rax  （目的为被除数，源为除数）
+
+第一个操作数：立即数、寄存器或内存地址
+
+第二个操作数：寄存器或内存地址
+
+### 3.5.3 Shift Operations
+
+当寄存器为0xFF，salb移7位，salw移15位，sall移31位，salq移63位
+
+### 3.5.4 Discussion
+
+**练习题3.11**
+
+![image-20220105195231107](Chapter 3：Machine-Level Representation of Programs.assets/image-20220105195231107.png)
+
+### 3.5.5 Special Arithmetic Operations
+
+![image-20220105200025083](Chapter 3：Machine-Level Representation of Programs.assets/image-20220105200025083.png)
+
+1. 由%rdx(高64)和%rax(低64)共同组成的128位
+2. 要求由一个参数必须在寄存器%rax中，另一个作为源操作数给出。
+3. 除法需要将参数存在rax，对rax使用cqto对高64位进行符号扩展，得到128位的%rdx和%rax结合。最终模数存在%rdx，结果存在%rax
+
+**乘法案例：**
+
+![image-20220105200353373](Chapter 3：Machine-Level Representation of Programs.assets/image-20220105200353373.png)
+
+**除法案例：**
+
+需要将%rdx存的数据暂存到另一个位置，将%rdx参与除法计算
+
+![image-20220105200823972](Chapter 3：Machine-Level Representation of Programs.assets/image-20220105200823972.png)
+
+**练习题3.12**
+
+![image-20220105201855307](Chapter 3：Machine-Level Representation of Programs.assets/image-20220105201855307.png)
+
+无符号扩展，采用movl $0, %rdx。将高8位设置为0。
+
+最后再用无符号除法指令。
+
+## 3.6 Control
+
+### 3.6.1 Condition Codes
+
+![image-20220105202205693](Chapter 3：Machine-Level Representation of Programs.assets/image-20220105202205693.png)
+
+**案例**
+
+![image-20220105202355308](Chapter 3：Machine-Level Representation of Programs.assets/image-20220105202355308.png)
+
+**leadq指令不改变任何条件码。其他图3-10列出指令都会设置条件码**
+
+![image-20220105203304893](Chapter 3：Machine-Level Representation of Programs.assets/image-20220105203304893.png)
+
+1. CMP跟SUB行为一样，但是不改变目的寄存器，只设置条件码
+
+2. TEST类似AND，一般用来测试两个操作数是否相同（`testq %rax. %rax` 检查%rax是负数、零还是正数）。或者一个是掩码，指示哪些位应该测试。
+
+### 3.6.2 Accessing the Condition Codes
+
+1. 某些组合，将字节设置为0或1
+2. 条件跳转
+3. 条件传送数据
+
+![image-20220105203605702](Chapter 3：Machine-Level Representation of Programs.assets/image-20220105203605702.png)
+
+**案例：**
+
+![image-20220105204050944](Chapter 3：Machine-Level Representation of Programs.assets/image-20220105204050944.png)
+
+#### 练习题3.13
+
+![image-20220105205421880](Chapter 3：Machine-Level Representation of Programs.assets/image-20220105205421880.png)
+
+![image-20220105205430068](Chapter 3：Machine-Level Representation of Programs.assets/image-20220105205430068.png)
+
+通过cmp跟set两个分别判断位数及有无符号。
