@@ -6,9 +6,9 @@
 
 **番茄钟个数：** 24
 
-| 章节                                                | 状态 | 番茄钟 | 开始时间   | 结束时间   | 链接                                                         |
-| --------------------------------------------------- | ---- | ------ | ---------- | ---------- | ------------------------------------------------------------ |
-| 第1章：计算机系统漫游                               | √    | 5      | 2021.12.28 | 2021.12.28 | [第1章：计算机系统漫游.md](computer-system\第1章：计算机系统漫游.md) |
-| 第2章：信息的表示和处理                             | √    | 11     | 2021.12.28 | 2022.01.05 | [第2章：信息的表示和处理.md](computer-system\第2章：信息的表示和处理.md) |
-| Chapter 3：Machine-Level Representation of Programs |      | 8      | 2022.01.05 |            | [Chapter 3：Machine-Level Representation of Programs.md](computer-system\Chapter 3：Machine-Level Representation of Programs.md) |
+| 章节                                                | 状态 | 番茄钟 | 开始时间   | 结束时间   | 时长    | 累计时长 | 链接                                                         |
+| --------------------------------------------------- | ---- | ------ | ---------- | ---------- | ------- | -------- | ------------------------------------------------------------ |
+| 第1章：计算机系统漫游                               | √    | 5      | 2021.12.28 | 2021.12.28 | 2h05min | 2h05min  | [第1章：计算机系统漫游.md](computer-system\第1章：计算机系统漫游.md) |
+| 第2章：信息的表示和处理                             | √    | 11     | 2021.12.28 | 2022.01.05 | 4h35min | 6h40min  | [第2章：信息的表示和处理.md](computer-system\第2章：信息的表示和处理.md) |
+| Chapter 3：Machine-Level Representation of Programs |      | 8 + 11 | 2022.01.05 |            |         |          | [Chapter 3：Machine-Level Representation of Programs.md](computer-system\Chapter 3：Machine-Level Representation of Programs.md) |
 
