@@ -4,6 +4,8 @@
 
 **学习时间：** 2021.12.28
 
+**当前进度：**402/775
+
 **番茄钟个数：** 
 
 | 章节                                                | 状态 | 番茄钟       | 开始时间   | 结束时间   | 时长     | 累计番茄 | 累计时长 | 链接                                                         |
@@ -12,5 +14,5 @@
 | 第2章：信息的表示和处理                             | ✔    | 11           | 2021.12.28 | 2022.01.05 | 4h35min  | 16       | 6h40min  | [第2章：信息的表示和处理.md](computer-system\第2章：信息的表示和处理.md) |
 | Chapter 3：Machine-Level Representation of Programs | ✔    | 8+11+10+3=32 | 2022.01.05 | 2022.01.08 | 13h20min | 48       | 20h      | [Chapter 3：Machine-Level Representation of Programs.md](computer-system\Chapter 3：Machine-Level Representation of Programs.md) |
 | Chapter 4：Processor Architecture                   | ✔    | 6+5+2=11     | 2022.01.08 | 2022.01.15 | 4h35min  | 59       | 24h55min | [Chapter 4：Processor Architecture.md](computer-system\Chapter 4：Processor Architecture.md) |
-| Chapter 5: Optimizing Program Performance           |      |              | 2022.01.15 |            |          |          |          |                                                              |
+| Chapter 5: Optimizing Program Performance           | ✔    | 5+5=10       | 2022.01.15 | 2022.01.16 | 4h10min  | 69       | 29h05min | [Chapter 5 Optimizing Program Performance.md](computer-system\Chapter 5 Optimizing Program Performance.md) |
 
