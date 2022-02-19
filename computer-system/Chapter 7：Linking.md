@@ -172,6 +172,282 @@ x初始化为0则为强符号，则可以自信的分配给.bss
 
 ### 7.6.3 How Linkers Use Static Libraries to Resolve References
 
-连接器维护可重定位目标文件集合E，未解析的符号集合U，前面输入文件中已定义的符号集合D。初始时均为空。
+链接器维护**可重定位目标文件集合E，未解析的符号集合U，前面输入文件中已定义的符号集合D**。初始时均为空。
 
-* 链接器判断目标文件，添加到E，修改U和
+![image-20220212163729533](Chapter 7：Linking.assets/image-20220212163729533.png)
+
+扫描后U非空，错误并终止，  否则输出可执行文件。
+
+![image-20220212164018911](Chapter 7：Linking.assets/image-20220212164018911.png)
+
+foo.c -> libx.a ,libz.a -> liby.a
+
+![image-20220212164235085](Chapter 7：Linking.assets/image-20220212164235085.png)
+
+foo.c ->llibx.a->liby.a->libx.a
+
+也可以将libx.a 和liby.a合并单独的存档文件。
+
+##### 练习题7.3
+
+![image-20220212164944725](Chapter 7：Linking.assets/image-20220212164944725.png)
+
+1. gcc p.o libx.a
+2. gcc p.o libx.a liby.a
+3. gcc p.o libx.a liby.a libx.a (p.o)
+
+没有依赖可以任意顺序，依赖必须排序， 而重复调用函数需要重复出现，初始调用的代码不需要重复出现，如3中的p.o可忽略
+
+## 7.7 Relocation
+
+重定位步骤：
+
+1. 重定位节（sections）和符号定义：相同类型节合并同一类型新的聚合节
+2. 重定位节中的符号引用：修改代码节和数据节对每个符号引用，指向正确运行位置
+
+### 7.7.1 Relocation Entries（重定位条目）
+
+告诉链接器将在**目标文件**合并成**可执行文件**如何修改引用。
+
+![image-20220212165640134](Chapter 7：Linking.assets/image-20220212165640134.png)
+
+offset：被修改的引用节偏移
+
+symbol：被修改引用指向的符号
+
+type：如何修改新引用
+
+addend：被修改引用的值做偏移调整
+
+32种重定位类型，基本两种：
+
+R_X86_64_PC32：相对地址引用（PC+value）
+
+R_X86_64_32：绝对地址引用
+
+### 7.7.2 Relocation Symbol References
+
+![image-20220212170151704](Chapter 7：Linking.assets/image-20220212170151704.png)
+
+双重迭代从节点开始遍历每个条目。
+
+先加上偏移地址，判断为相对寻址还是绝对寻址，进行重定位。
+
+![image-20220212170537710](Chapter 7：Linking.assets/image-20220212170537710.png)
+
+#### Relocationg PC-Relative References
+
+在0xe位置调用sum，得到重定位的条目解析如下
+
+![image-20220212170659586](Chapter 7：Linking.assets/image-20220212170659586.png)
+
+修改开始于偏移量0xf处  32位相对引用。按照算法规则进行计算。
+
+假设
+
+ADDR(s) = ADDR(.text) = 0x4004d0
+
+ADDR(r.symbol) = ADDR(sum) = 0x4004e8
+
+![image-20220212171507723](Chapter 7：Linking.assets/image-20220212171507723.png)
+
+计算出相对引用的地址为0x5
+
+接下来进行调用
+
+1. 先将PC(0x4004e3)压入栈中。(该地址为4004de的下一个地址，即+0x4)
+2. 将PC=PC+0x5作为新的调用地址。即调用sum函数
+
+#### Relocating Absolute References
+
+array为变量，通过绝对引用确定变量位置。
+
+![image-20220212171751323](Chapter 7：Linking.assets/image-20220212171751323.png)
+
+![image-20220212172021455](Chapter 7：Linking.assets/image-20220212172021455.png)
+
+![image-20220212172435975](Chapter 7：Linking.assets/image-20220212172435975.png)
+
+##### 练习题7.4
+
+![image-20220212173005072](https://gitee.com/junchao-ustc/picture/raw/master/20220212173014.png)
+
+relocate reference address：
+
+redaddr=ADDR(s) + r.offset=0x4004de+0xf=0x4004ef
+
+relocate reference address：
+
+*refptr = (unsigned) (ADDR(r.symbol) + r.addend - refaddr)=0x5
+
+##### 练习题7.5
+
+![image-20220212173421577](Chapter 7：Linking.assets/image-20220212173421577.png)
+
+相对引用地址，0x4004d0+0xa=0x4004da
+
+相对引用值：0x4004e8 - 0x4004da - 4 = 0xa
+
+最终得到 ：
+
+`40004d9:  e8 0a 00 00 00  callq 4004e8<swap>`
+
+## 7.8 Executable Object Files
+
+![image-20220212173849349](Chapter 7：Linking.assets/image-20220212173849349.png)
+
+类似可重定位目标文件。
+
+还包含entry point，程序第一条指令地址。
+
+.init节定义了_init函数，用于初始化代码时调用。
+
+已被重定位，不需要rel节
+
+**程序头部表**
+
+![image-20220212175043834](Chapter 7：Linking.assets/image-20220212175043834.png)
+
+需要选择一个起始地址addr 使得：
+
+![image-20220212174721891](Chapter 7：Linking.assets/image-20220212174721891.png)
+
+## 7.9 Loading Executable Object Files
+
+加载：加载器将可执行目标文件中代码和数据从磁盘复制到内存，跳转到程序入口点运行。
+
+![image-20220212175417444](Chapter 7：Linking.assets/image-20220212175417444.png)
+
+代码段总是从0x400000处开始，后面是数据段。运行时堆在数据段之后，通过malloc增长。
+
+用户栈从最大合法用户地址(2的48次方-1)开始。
+
+还会使用空间布局随机化(ASLR)，但相对位置是不变的。
+
+_start函数调用系统启动函数__lib_start_main，定义在libc.so调用main
+
+>  关于加载，shell运行程序，父进程生成子进程，是父进程的复制。子进程通过execve系统调用启动加载器。加载器删除子进程现有的虚拟内存段，创建一组新的代码、数据、堆和栈段。初始化为零。映射到可自行文件的页大小的片，初始化为可执行文件内容。最后加载器跳转到_start地址，调用main函数。直到CPU引用一个被映射的虚拟页才进行复制，将页面从磁盘传送到内存。
+
+## 7.10 Dynamic Linking with Shared Libraries
+
+动态链接：共享库是一个目标模块，运行或加载时，可以加载到任意的内存地址，并和内存中的程序链接起来。.so后缀  (微软共享库称为DLL)
+
+一个共享库的.text节副本可以被不同正在运行的程序共享。
+
+![image-20220212182305154](Chapter 7：Linking.assets/image-20220212182305154.png)
+
+先创建共享目标文件libvector.so
+
+
+
+![image-20220212182430678](Chapter 7：Linking.assets/image-20220212182430678.png)
+
+运行时可以和libvector.so链接
+
+链接器复制了一些重定位和符号表信息，使得运行时可以解析对libvecctor.so代码和数据的引用。
+
+![image-20220212182809079](Chapter 7：Linking.assets/image-20220212182809079.png)
+
+**并不像静态库那样被复制和嵌入到引用它们的可执行文件中**
+
+## 7.11 Loading and linking Shared Libraries from Applications
+
+动态链接应用：
+
+分发软件：代替当前版本
+
+构建高性能Web服务器：生成动态内容
+
+提供简单接口，允许应用程序在运行时加载和链接共享库。
+
+![image-20220212183250674](Chapter 7：Linking.assets/image-20220212183250674.png)
+
+加载和链接共享库filename
+
+![image-20220212184154578](Chapter 7：Linking.assets/image-20220212184154578.png)
+
+指向前面已经打开的共享库的句柄和一个symbol名字
+
+![image-20220212184255088](Chapter 7：Linking.assets/image-20220212184255088.png)
+
+没有正在使用的，卸载共享库
+
+![image-20220212184326985](Chapter 7：Linking.assets/image-20220212184326985.png)
+
+返回调用函数发生的错误
+
+## 7.12Position-Independent Code (PIC)
+
+无限多个进程可以共享一个共享模块的代码段的单一副本
+
+加载不需要重定位的代码
+
+#### PIC Data References
+
+在数据段开始的地方创建全局偏移量表(GOT)。GOT每个条目生成重定位记录。加载时动态链接器重定位条目，包含正确的绝对位置。
+
+![image-20220212185304963](Chapter 7：Linking.assets/image-20220212185304963.png)
+
+由于代码段和数据段距离相同，则GOT的每个位置都有固定距离。
+
+#### PIC Function Calls
+
+延迟绑定：将过程地址的绑定推迟到第一次调用该过程时
+
+利用GOT和过程链接表(PLT)实现。
+
+![image-20220212190842828](Chapter 7：Linking.assets/image-20220212190842828.png)
+
+![image-20220212190509730](Chapter 7：Linking.assets/image-20220212190509730.png)
+
+![image-20220212191006267](Chapter 7：Linking.assets/image-20220212191006267.png)
+
+## 7.13 Library Interpositioning
+
+允许截获对共享库函数的调用，取而代之执行自己的代码。
+
+追踪某个特殊库函数的调用次数，验证和追踪它的输入和输出值，甚至替换完全不同的实现。
+
+思想：给定需要打桩的目标函数，创建一个包装函数。欺骗系统调用包装函数而不是目标函数
+
+### 7.13.1 compile-Time Interpositioning
+
+包装函数调用目标函数，得到编译信息
+
+![image-20220213111523875](Chapter 7：Linking.assets/image-20220213111523875.png)
+
+### 7.13.2 Link-Time Interpositioning
+
+![image-20220213112225636](Chapter 7：Linking.assets/image-20220213112225636.png)
+
+### 7.13.3 Run-Time Interpositioning
+
+编译打桩需要访问程序源代码
+
+连接时打桩需要访问程序的可重定位对象文件
+
+运行时需要访问可执行文件，基于动态链接器的LD_PRELOAD环境遍历
+
+有限搜索LD_PRELOAD库，才搜索其他库
+
+![image-20220213112610428](Chapter 7：Linking.assets/image-20220213112610428.png)
+
+![image-20220213112642321](Chapter 7：Linking.assets/image-20220213112642321.png)
+
+## 7.15 Summary
+
+链接：编译时由静态编译器完成，或加载和运行时由动态链接器完成。
+
+目标函数：可重定位、可执行、共享的
+
+链接器：符号解析（全局符号绑定唯一定义）、重定位（确定每个符号的最终内存地址）
+
+静态链接器：多个可重定位目标文件合并单独可执行文件
+
+链接器错误：1.多个目标文件定义相同符号、2.链接器从左到右扫描解析符号引用
+
+加载器：可执行文件内容映射到内存并运行
+
+动态链接器，加载共享库和重定位程序中的引用
+
+位置无关代码：加载到任何地方，多个进程共享。

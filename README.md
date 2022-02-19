@@ -4,7 +4,7 @@
 
 **学习时间：** 2021.12.28
 
-**当前进度：**402/775
+**当前进度：**528/775
 
 **番茄钟个数：** 
 
@@ -16,5 +16,7 @@
 | Chapter 4：Processor Architecture                   | ✔    | 6+5+2=11     | 2022.01.08 | 2022.01.15 | 4h35min  | 59       | 24h55min | [Chapter 4：Processor Architecture.md](computer-system\Chapter 4：Processor Architecture.md) |
 | Chapter 5: Optimizing Program Performance           | ✔    | 5+5=10       | 2022.01.15 | 2022.01.16 | 4h10min  | 69       | 29h05min | [Chapter 5 Optimizing Program Performance.md](computer-system\Chapter 5 Optimizing Program Performance.md) |
 | Chapter 6：The Memory Hierarchy                     | ✔    | 6+5=11       | 2022.01.25 | 2022.01.26 | 4h35min  | 80       | 33h40min | [Chapter 6The Memory Hierarchy.md](computer-system\Chapter 6The Memory Hierarchy.md) |
-| Chapter 7：Linking                                  |      |              | 2022.01.26 |            |          |          |          |                                                              |
+| Chapter 7：Linking                                  | ✔    | 4+3+1=8      | 2022.01.26 | 2022.02.13 | 3h20min  | 88       | 37h      | [Chapter 7：Linking.md](computer-system\Chapter 7：Linking.md) |
+| Chapter 8：Exceptional Control Flow                 | ✔    | 6+3=9        | 2022.02.17 | 2022.02.18 | 3h45min  | 97       | 40h45min | [Chapter 8：Exceptional Control Flow.md](computer-system\Chapter 8：Exceptional Control Flow.md) |
+| Chapter 9：Virtual Memory                           |      | 6            | 2022.02.18 |            |          |          |          |                                                              |
 
