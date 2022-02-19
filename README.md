@@ -18,5 +18,5 @@
 | Chapter 6：The Memory Hierarchy                     | ✔    | 6+5=11       | 2022.01.25 | 2022.01.26 | 4h35min  | 80       | 33h40min | [Chapter 6The Memory Hierarchy.md](computer-system\Chapter 6The Memory Hierarchy.md) |
 | Chapter 7：Linking                                  | ✔    | 4+3+1=8      | 2022.01.26 | 2022.02.13 | 3h20min  | 88       | 37h      | [Chapter 7：Linking.md](computer-system\Chapter 7：Linking.md) |
 | Chapter 8：Exceptional Control Flow                 | ✔    | 6+3=9        | 2022.02.17 | 2022.02.18 | 3h45min  | 97       | 40h45min | [Chapter 8：Exceptional Control Flow.md](computer-system\Chapter 8：Exceptional Control Flow.md) |
-| Chapter 9：Virtual Memory                           |      | 6            | 2022.02.18 |            |          |          |          |                                                              |
+| Chapter 9：Virtual Memory                           | ✔    | 6+9=15       | 2022.02.18 | 2022.02.19 | 6h15min  | 112      |          |                                                              |
 
